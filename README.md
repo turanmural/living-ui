@@ -55,7 +55,7 @@ describe them, you want Living UI.
 ### 1. Add the package
 
 ```swift
-.package(url: "https://github.com/turanalemfilms-cloud/living-ui", from: "0.1.0")
+.package(url: "https://github.com/turanmural/living-ui", from: "0.1.0")
 ```
 
 ### 2. Render

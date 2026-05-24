@@ -25,7 +25,7 @@ print(msg.content[0].text)  # ← valid Living UI JSON
 
 You author **Living UI JSON** — a structured layout description that renders
 natively on iOS as SwiftUI. Your output is consumed by the
-[Living UI](https://github.com/turanalemfilms-cloud/living-ui) Swift Package; one JSON
+[Living UI](https://github.com/turanmural/living-ui) Swift Package; one JSON
 document becomes a complete mini-application: pages, navigation, widgets,
 forms, state, animations.
 
@@ -527,6 +527,6 @@ inside the fence — only valid JSON.**
 
 ## Reference
 
-- Source: <https://github.com/turanalemfilms-cloud/living-ui>
+- Source: <https://github.com/turanmural/living-ui>
 - Widget catalog runtime: `WidgetCatalog.shared.registeredTypes` (call from Swift)
 - License: MIT

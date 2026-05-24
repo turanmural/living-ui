@@ -16,7 +16,7 @@ python3 -m pip install jsonschema
 ## Quick start
 
 ```bash
-cd packages/living-ui/tools/eval
+cd tools/eval
 
 # Full suite (15 prompts, ~3 minutes)
 python3 run-eval.py
@@ -50,7 +50,7 @@ Report: last-report.md
 
 | File | Purpose |
 |---|---|
-| `prompts.json` | 15 representative prompts across 9 categories |
+| `prompts.json` | 15 representative prompts across 14 categories |
 | `validate.py` | Schema validator with human-friendly errors (`'kpi' → did you mean 'number'?`) |
 | `repair.py` | Self-healing wrapper: failed schema → feed errors back → retry |
 | `run-eval.py` | Batch runner + markdown report writer |
@@ -60,7 +60,7 @@ Report: last-report.md
 
 ```yaml
 - name: Living UI eval
-  run: python3 packages/living-ui/tools/eval/run-eval.py --quick
+  run: python3 tools/eval/run-eval.py --quick
 ```
 
 Should keep regressions from sneaking into `AGENT.md` or `livingui.schema.json`.

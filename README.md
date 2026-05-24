@@ -1,6 +1,6 @@
 # Living UI
 
-> **The first LLM-native SDUI engine.**
+> **An LLM-native SDUI engine for streaming agent-generated interfaces.**
 > JSON arrives as a stream. The UI builds itself, breathes, and stays in sync
 > with state — no `flutter run`, no app store deploy, no template authoring.
 > Just structured intent from any agent.
@@ -8,11 +8,16 @@
 [![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)](https://swift.org)
 [![iOS](https://img.shields.io/badge/iOS-17%2B-blue.svg)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Claude](https://img.shields.io/badge/Claude%20Sonnet%204.7-93%25%20first--try-7C3AED.svg)](tools/eval/last-report.md)
-[![GPT-5.5](https://img.shields.io/badge/GPT--5.5-100%25%20first--try-10A37F.svg)](tools/eval/COMPARISON-claude-vs-openai.md)
+[![Claude](https://img.shields.io/badge/Claude%20Opus%204.7-14%2F15%20first--try-7C3AED.svg)](docs/eval-methodology.md)
+[![GPT-5.5](https://img.shields.io/badge/GPT--5.5%20(via%20Codex)-15%2F15%20first--try-10A37F.svg)](docs/eval-methodology.md)
 
-**Verified on two frontier models** — 15-prompt eval suite, no human curation:
-Claude Sonnet 4.7 hits 93% first-try (avg 14.8s/prompt), GPT-5.5 hits **100% first-try** (avg 47.7s/prompt). Both reach 100% with the built-in repair loop. [Full comparison →](tools/eval/COMPARISON-claude-vs-openai.md)
+**15-prompt eval suite, no human curation.** Claude Opus 4.7 passes 14/15
+first-try via the local Claude CLI (avg 14.8s/prompt). GPT-5.5 passes 15/15
+first-try via `codex exec` (avg 47.7s/prompt) — full OpenAI API verification
+pending. Both reach 15/15 once the built-in repair loop is enabled. See
+[docs/eval-methodology.md](docs/eval-methodology.md) for full transparency
+and [tools/eval/COMPARISON-claude-vs-openai.md](tools/eval/COMPARISON-claude-vs-openai.md)
+for the comparison report.
 
 ```swift
 import LivingUI
@@ -30,8 +35,8 @@ with the right skeletons while the JSON streams in.
 
 ## Why this exists
 
-Server-Driven UI frameworks (Airbnb's BloomerangUI, Yandex's DivKit, Lyft's
-Server Driven UI) were built for **human-authored** layouts that change every
+Server-Driven UI frameworks (Airbnb's Server Driven UI, Yandex's DivKit,
+Lyft's SDUI) were built for **human-authored** layouts that change every
 sprint. The bottleneck was deployment, so they shipped JSON instead of code.
 
 Living UI was built for **LLM-authored** layouts that change every sentence.
@@ -43,12 +48,16 @@ the agent thinks. Three things make this different from DivKit & friends:
 | Author | LLM (agent writes JSON live) | Designer (template + variables) |
 | Streaming | First-class — skeleton appears the moment `{"type":"chart"` is parsed | Layout arrives whole or not at all |
 | Animation | Staged 3-phase reveal (skeleton → shimmer → morph) | Static |
-| Widgets | 127 ready-to-render domain types (KZT finance, voice, AI primitives) | ~30 generic divs |
-| State | `ui_state.json` + 6 typed local actions, no agent wake-up needed | Variables + URL-style actions |
+| Widgets | 51 typed SwiftUI widgets across 10 categories + 14 block primitives | ~30 generic divs |
+| State | `ui_state.json` + typed local actions (`setState`, `toggleState`, `incrementState`, `appendState`), no agent wake-up needed | Variables + URL-style actions |
 | iOS native | Liquid Glass, Dynamic Island integration | Material-leaning |
 
-If you are building an AI assistant that needs to *show* things, not just
-describe them, you want Living UI.
+Living UI is **not a replacement** for mature enterprise SDUI — DivKit and
+Airbnb's stack are battle-tested for human-designed product surfaces with
+strict design-system contracts. Living UI targets a different shape: small,
+agent-authored micro-app surfaces that appear inline in chat or assistant
+UIs and are valid for one conversation. If you are building an AI assistant
+that needs to *show* things, not just describe them, you want Living UI.
 
 ## Quick start
 
@@ -107,24 +116,26 @@ for try await chunk in agent.outputStream {
 LivingUIView(store: store).onAction { ... }
 ```
 
-The library handles partial JSON, fences (` ```shymyr-widget {...}` ` in chat
-text), schema validation, and 18 type-aware skeletons while the agent finishes
-writing.
+The library handles partial JSON, fences (` ```living-ui-widget {...}` ` in chat
+text), schema validation, and 17 type-aware skeleton shapes while the agent
+finishes writing.
 
 ## What's in the box
 
 ```
 Sources/LivingUI/
-├── Core/                    UiConfig schema · UiAction · UiState engine · Store
-├── Parser/                  SegmentParser (streaming) · SkeletonShape
-├── Widgets/                 127-widget catalog (15 category enums)
-│   └── Category/            Renderer per category (KPI, DataViz, Form, …)
-├── Rendering/               BlockRenderer · StagedWidgetView (3-phase reveal)
-├── Theme/                   ThemeTokens · GlassEffect · Color+Hex
-└── Animation/               BreathingBackground · HairlineTrace · Shimmer
+├── Core/         UiConfig schema · UiAction · UiState engine · Store
+├── Parser/       SegmentParser (streaming) · 17 SkeletonShape variants
+├── Widgets/      51 widgets across 10 categories (KPI, Form, Layout,
+│                 DataViz, Time, Action, Feedback, Morphing, Container,
+│                 Primitives)
+├── Rendering/    BlockRenderer (14 block types) · StagedWidgetView (3-phase reveal)
+├── Theme/        ThemeTokens · GlassEffect · Color+Hex
+└── Animation/    BreathingBackground · HairlineTrace · Shimmer
 ```
 
-A single `LivingUIView` wraps the lot.
+A single `LivingUIView` wraps the lot. Numbers above are produced by
+`python3 tools/metrics.py` so they cannot drift from the source.
 
 ## Demo
 
@@ -139,10 +150,10 @@ through to see the streaming animation.
 
 ## Agent SDK — the killer feature
 
-Living UI ships with a **drop-in system prompt** (`docs/AGENT.md`, 4.8K tokens)
-and a **JSON Schema** (`docs/livingui.schema.json`) so any LLM can author
-valid Living UI JSON on the first try. No fine-tuning, no eval suite — just
-hand the file to the model.
+Living UI ships with a **drop-in system prompt** (`docs/AGENT.md`, ~5.8K tokens
+on cl100k) and a **JSON Schema** (`docs/livingui.schema.json`) so any LLM can
+author valid Living UI JSON on the first try. No fine-tuning, no eval suite —
+just hand the file to the model.
 
 ```python
 import anthropic, pathlib
@@ -171,7 +182,7 @@ an unknown widget type. See [docs/getting-started-agent.md](docs/getting-started
 
 ## Roadmap
 
-- ✅ **0.1** — iOS Swift Package, 127 widgets, streaming parser, three themes
+- ✅ **0.1** — iOS Swift Package, 51 widgets, 17 skeletons, 14 block primitives, streaming parser, three themes, 15-prompt eval
 - 🚧 **0.2** — Android renderer (Jetpack Compose port)
 - 🚧 **0.3** — Web renderer (React, SSR-friendly)
 - 🚧 **0.4** — Expression engine (`@{ income - expense > 0 ? "ОК" : "Тарылды" }`)

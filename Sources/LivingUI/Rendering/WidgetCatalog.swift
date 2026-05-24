@@ -33,7 +33,8 @@ public final class WidgetCatalog {
 
     public var registeredTypes: [String] { Array(renderers.keys).sorted() }
 
-    // MARK: - Built-in widgets — 30 across 6 categories
+    // MARK: - Built-in widgets
+    // Run `python3 tools/metrics.py` for an up-to-date count.
 
     private func registerBuiltins() {
         // KPI / number (1 widget, 3 variants: single/grid/score)

@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "prompts": [
+    {
+      "id": "finance-dashboard",
+      "category": "finance",
+      "prompt": "Build a finance dashboard mini-app for a Kazakhstani user. Show current balance ₸ 450,000 with a 12% positive trend, a budget grid for the month (income 350K, expense 180K, saved 170K), and a 7-day spending bar chart. Return a full UiConfig JSON with theme=warm.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "todo-tracker",
+      "category": "productivity",
+      "prompt": "Build a daily todo mini-app. Heading 'Today', 3 sample tasks (already typed), and a quick-reply chip row with suggestions to add common tasks like 'Workout', 'Call mom', 'Read'. Full UiConfig.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "meditation-timer",
+      "category": "wellness",
+      "prompt": "Create a meditation timer mini-app. A big score gauge showing 78/100 calm score, a 5-minute breathing countdown, and three preset buttons for 1/5/10 minute sessions. Full UiConfig.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "weather-card",
+      "category": "weather",
+      "prompt": "Give me ONLY a single widget (no full UiConfig) for a weather card showing Almaty +18° sunny, in a vstack hero card with primitive composition. Use the appropriate icon and warm theme colors. Wrap in living-ui-widget fence.",
+      "expect": "widget"
+    },
+    {
+      "id": "single-number",
+      "category": "kpi",
+      "prompt": "Just one number widget showing today's revenue ₸ 84,500 with trend +6.5%. Output only the widget JSON in a living-ui-widget fence.",
+      "expect": "widget"
+    },
+    {
+      "id": "expandable-card",
+      "category": "morphing",
+      "prompt": "Build a UiConfig with one expandable widget — compact shows a credit-card-style block (last 4 digits 4242, card holder name), expanded shows the same plus full transaction list with 3 sample entries. Use the morphing 'expandable' widget type.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "form-signup",
+      "category": "form",
+      "prompt": "Build a signup form mini-app. formGroup with name input, email input, age numberInput, city dropdown (Almaty/Astana/Shymkent), submit button. Full UiConfig with appropriate state. Submit actionId should be 'user.signup.submit'.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "interactive-counter",
+      "category": "state",
+      "prompt": "Build a counter mini-app. A stat showing the counter value (bound to ui_state path 'count'), and a button row with -1/+1/reset buttons that mutate state without waking the agent. Initial state: count=0. Full UiConfig.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "primitive-hero",
+      "category": "primitive",
+      "prompt": "Give me ONE widget that is a pure-primitive vstack hero card with a sparkles icon, bold welcome text 'Living UI', and small subtitle. Use entrance transition rise, dark background, white text. Output only the widget JSON.",
+      "expect": "widget"
+    },
+    {
+      "id": "morphing-tabs",
+      "category": "morphing",
+      "prompt": "Build a full UiConfig with three button-row tabs that mutate state.selectedTab to 0/1/2, and a 'morph' widget below them with three frames (a card view, a stat row, a quote card) bound to selectedTab via selectedIndexStatePath. Initial state selectedTab=0.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "calendar-day",
+      "category": "time",
+      "prompt": "Build a dayAgenda widget mini-app showing 'Today' with three events: 09:00 Standup, 13:00 Lunch with mom, 17:30 Pickup kids. Full UiConfig with a heading above the calendar.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "audio-chat-widget",
+      "category": "chat",
+      "prompt": "I want to send a WhatsApp-style audio summary widget to the user in the chat. The text should be 'Aigul, dayyn. 3 days of meal plans. Magnum ~3,200 KZT.'. Output only the single widget JSON in a living-ui-widget fence — the host has registered 'audioSummary' type.",
+      "expect": "widget",
+      "allowedHostWidgets": ["audioSummary"]
+    },
+    {
+      "id": "approval-flow",
+      "category": "action",
+      "prompt": "Build a mini-app that asks the user to confirm a money transfer of ₸ 15,000 to 'Жанар' using the confirmAction widget. Show recipient + amount above, then the confirm/cancel actions with actionId 'transfer.confirm'. Full UiConfig.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "stagger-list",
+      "category": "animation",
+      "prompt": "Build a full UiConfig with a vstack of four cards as widgets, with stagger=0.07 so they cascade in. Each card has a number badge (01/02/03/04) and short text. Use heading 'Stagger demo' above.",
+      "expect": "uiconfig"
+    },
+    {
+      "id": "edge-thin",
+      "category": "edge",
+      "prompt": "Give me the absolute minimum valid UiConfig — just a single heading block 'Hello'. Nothing else. No widgets, no state.",
+      "expect": "uiconfig"
+    }
+  ]
+}

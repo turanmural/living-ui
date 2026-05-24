@@ -1,0 +1,34 @@
+# Xcode
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+xcuserdata/
+DerivedData/
+*.xcuserstate
+*.swiftpm/xcode/xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Generated Xcode projects (use xcodegen to regenerate)
+Examples/*/build/
+Examples/*/*.xcodeproj/project.xcworkspace/xcuserdata/
+Examples/*/*.xcodeproj/xcuserdata/
+
+# macOS
+.DS_Store
+
+# Python eval harness
+tools/eval/__pycache__/
+tools/eval/*.pyc
+tools/eval/.venv/
+
+# Generated eval reports (regenerated each run)
+tools/eval/last-report.md
+tools/eval/last-report-openai.md
+
+# IDE
+.vscode/
+.idea/

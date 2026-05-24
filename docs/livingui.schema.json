@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://livingui.dev/schemas/0.5.0/livingui.schema.json",
+  "title": "Living UI · UiConfig",
+  "description": "Machine-readable schema of a Living UI document. Suitable for OpenAI Structured Outputs and Anthropic tool_use validation. Lists every built-in widget and block type as a string enum so an LLM physically cannot produce an unknown component.",
+  "type": "object",
+  "required": ["version", "app"],
+  "properties": {
+    "version": { "type": "integer", "const": 2 },
+    "theme": {
+      "type": "object",
+      "properties": {
+        "active": { "type": "string", "enum": ["warm", "glass", "custom"] }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "properties": { "fontScale": { "type": "number", "minimum": 0.5, "maximum": 1.6 } }
+    },
+    "state": { "type": "object", "description": "Initial ui_state.json snapshot" },
+    "app": {
+      "type": "object",
+      "required": ["home", "pages"],
+      "properties": {
+        "home": { "type": "string", "description": "id of the starting page" },
+        "nav": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "required": ["label", "page"],
+            "properties": {
+              "label": { "type": "string" },
+              "icon":  { "type": "string", "description": "SF Symbol name" },
+              "page":  { "type": "string" }
+            }
+          }
+        },
+        "pages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["title", "blocks"],
+            "properties": {
+              "title":  { "type": "string" },
+              "blocks": { "type": "array", "items": { "$ref": "#/$defs/Block" } }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+
+    "Block": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "heading", "text", "note", "button", "buttonRow",
+            "stat", "statRow", "list", "card", "progress",
+            "todo", "image", "divider", "spacer", "widget"
+          ]
+        },
+        "id": { "type": "string" }
+      },
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "widget" } }, "required": ["type"] },
+          "then": {
+            "required": ["data"],
+            "properties": { "data": { "$ref": "#/$defs/Widget" } }
+          }
+        }
+      ]
+    },
+
+    "Widget": {
+      "type": "object",
+      "description": "A widget node. `type` enum lists every built-in component grouped by category in the description.",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "kpi: number · dataviz: chart, lineChart, pieChart, donutChart, sparkline, progressBar, gauge · form: input, numberInput, dateInput, dropdown, toggle, slider, checkbox, formGroup · time: dayAgenda, timeline, countdown, calendar · layout: tabs, accordion, carousel, grid, columns · action: approval, confirmAction, quickReply, cta · feedback: toast, infoBanner, errorCard, emptyState · misc: todo · morphing: expandable, morph, flip, interactive · primitive: vstack, hstack, zstack, box, text, icon, image, spacer, divider, card, pill, badge, button",
+          "enum": [
+            "number",
+            "chart", "lineChart", "pieChart", "donutChart", "sparkline", "progressBar", "gauge",
+            "input", "numberInput", "dateInput", "dropdown", "toggle", "slider", "checkbox", "formGroup",
+            "dayAgenda", "timeline", "countdown", "calendar",
+            "tabs", "accordion", "carousel", "grid", "columns",
+            "approval", "confirmAction", "quickReply", "cta",
+            "toast", "infoBanner", "errorCard", "emptyState",
+            "todo",
+            "expandable", "morph", "flip", "interactive",
+            "vstack", "hstack", "zstack", "box",
+            "text", "icon", "image", "spacer", "divider",
+            "card", "pill", "badge", "button"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "UiAction": {
+      "type": "object",
+      "oneOf": [
+        { "required": ["kind", "path", "value"],
+          "properties": { "kind": { "const": "setState" }, "path": { "type": "string" }, "value": {} } },
+        { "required": ["kind", "path"],
+          "properties": { "kind": { "const": "toggleState" }, "path": { "type": "string" } } },
+        { "required": ["kind", "path"],
+          "properties": { "kind": { "const": "incrementState" }, "path": { "type": "string" },
+                          "by": { "type": "number" } } },
+        { "required": ["kind", "path", "value"],
+          "properties": { "kind": { "const": "appendState" }, "path": { "type": "string" }, "value": {} } },
+        { "required": ["kind", "patch"],
+          "properties": { "kind": { "const": "patchState" }, "patch": { "type": "object" } } },
+        { "required": ["kind", "path"],
+          "properties": { "kind": { "const": "deleteState" }, "path": { "type": "string" } } },
+        { "required": ["kind", "text"],
+          "properties": { "kind": { "const": "prompt" }, "text": { "type": "string" } } },
+        { "required": ["kind", "page"],
+          "properties": { "kind": { "const": "navigate" }, "page": { "type": "string" } } },
+        { "required": ["actionId"],
+          "properties": { "actionId": { "type": "string" }, "value": {} } }
+      ]
+    },
+
+    "Style": {
+      "type": "object",
+      "properties": {
+        "fontSize":     { "type": "number" },
+        "fontWeight":   { "type": "string", "enum": [
+          "ultraLight", "thin", "light", "regular", "medium",
+          "semibold", "bold", "heavy", "black"
+        ]},
+        "color":        { "type": "string", "pattern": "^#[0-9A-Fa-f]{6,8}$|^rgba\\(.+\\)$" },
+        "alignment":    { "type": "string", "enum": ["leading", "center", "trailing"] },
+        "lineLimit":    { "type": "integer", "minimum": 1 },
+        "padding": {
+          "type": "object",
+          "properties": {
+            "all":        { "type": "number" },
+            "horizontal": { "type": "number" },
+            "vertical":   { "type": "number" },
+            "top":        { "type": "number" },
+            "bottom":     { "type": "number" },
+            "leading":    { "type": "number" },
+            "trailing":   { "type": "number" }
+          }
+        },
+        "background":   { "type": "string", "pattern": "^#[0-9A-Fa-f]{6,8}$" },
+        "cornerRadius": { "type": "number", "minimum": 0 },
+        "border": {
+          "type": "object",
+          "properties": {
+            "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6,8}$" },
+            "width": { "type": "number", "minimum": 0 }
+          }
+        },
+        "shadow": {
+          "type": "object",
+          "properties": {
+            "color":   { "type": "string" },
+            "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+            "radius":  { "type": "number", "minimum": 0 },
+            "x":       { "type": "number" },
+            "y":       { "type": "number" }
+          }
+        },
+        "frame": {
+          "type": "object",
+          "properties": {
+            "width":     { "type": ["number", "string"] },
+            "height":    { "type": ["number", "string"] },
+            "maxWidth":  { "type": ["number", "string"] },
+            "minHeight": { "type": "number" }
+          }
+        },
+        "opacity":  { "type": "number", "minimum": 0, "maximum": 1 },
+        "rotation": { "type": "number" }
+      }
+    },
+
+    "AnimationTransition": {
+      "type": "string",
+      "enum": ["fade", "rise", "slide", "scale", "morph", "blur", "sparkle"]
+    },
+
+    "AnimationLoop": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type":      { "type": "string", "enum": ["pulse", "breathe", "wobble", "rotate", "shimmer", "glow"] },
+        "duration":  { "type": "number", "minimum": 0.2 },
+        "amplitude": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "AnimationKeyframeProgram": {
+      "type": "object",
+      "required": ["tracks"],
+      "properties": {
+        "tracks": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["property", "keyframes"],
+            "properties": {
+              "property": { "type": "string", "enum": [
+                "opacity", "scale", "scaleX", "scaleY",
+                "offsetX", "offsetY", "rotation",
+                "blur", "brightness", "saturation"
+              ]},
+              "keyframes": {
+                "type": "array", "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["t", "v"],
+                  "properties": {
+                    "t":     { "type": "number", "minimum": 0 },
+                    "v":     { "type": "number" },
+                    "curve": { "type": "string", "enum": ["ease", "spring", "linear", "move"] }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "SymbolEffect": {
+      "type": "string",
+      "enum": ["bounce", "pulse", "wiggle"]
+    }
+  }
+}

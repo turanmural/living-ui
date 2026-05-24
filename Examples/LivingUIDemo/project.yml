@@ -1,0 +1,40 @@
+name: LivingUIDemo
+options:
+  bundleIdPrefix: com.livingui
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+packages:
+  LivingUI:
+    path: ../..
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+
+targets:
+  LivingUIDemo:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: LivingUIDemo
+    dependencies:
+      - package: LivingUI
+    info:
+      path: LivingUIDemo/Info.plist
+      properties:
+        CFBundleDisplayName: Living UI Demo
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.livingui.demo
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: YES
